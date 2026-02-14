@@ -6,7 +6,13 @@
 // with `null` as the first argument and the provided value as the second argument.
 
 function delay(ms, value, callback) {
-   
+  return new Promise((resolve) =>
+    setTimeout(() => {
+      callback(null, value);
+      resolve();
+    }, ms),
+  );
 }
-  
+
 module.exports = delay;
+
