@@ -7,7 +7,27 @@
 // the callback with the same result (or error) from the first invocation.
 
 function once(fn) {
+  let isFnCalled = false;
+  let fnResponse = [true];
 
+  return (...args) => {
+    const actualcb = args.pop();
+
+    if (isFnCalled) {
+      actualcb(...fnResponse);
+      return;
+    }
+
+    isFnCalled = true;
+    const cb = (err, data) => {
+      fnResponse = [err, data];
+      actualcb(err, data);
+    };
+
+    args.push(cb);
+
+    fn(...args);
+  };
 }
 
 module.exports = once;
