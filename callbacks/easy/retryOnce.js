@@ -5,25 +5,22 @@
 // if the first attempt rejects.
 // If the second attempt also rejects, the error should be propagated.
 
-function retryOnce(fn) {
-  let isCompleted = false;
-  let retries = 0;
-  const maxRetries = 1;
-
+function retryOnce(fn, maxRetries = 1) {
   return (cb) => {
-    while (!isCompleted) {
+    let retries = 0;
+
+    const attempt = () => {
       fn((err, data) => {
-        if (data) {
-          isCompleted = true;
-        } else {
-          isCompleted = retries++ == maxRetries;
+        if (err && retries++ < maxRetries) {
+          attempt();
+          return;
         }
 
-        if (isCompleted) {
-          cb(err, data);
-        }
+        cb(err, data);
       });
-    }
+    };
+
+    attempt();
   };
 }
 
